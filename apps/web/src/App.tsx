@@ -1,4 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import TestApi from "./components/TestApi";
 
 export default function App() {
   const { isAuthenticated, isLoading, loginWithRedirect, error } = useAuth0();
@@ -16,7 +17,9 @@ export default function App() {
   }
 })}>Log in</button>
       ) : (
-        <div>Logged in ✅</div>
+        <div>Logged in ✅
+          <TestApi />
+        </div>
       )}
     </div>
   );
