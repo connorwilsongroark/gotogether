@@ -1,76 +1,76 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Set up CORS policy to allow requests from SPA during development
+// OPTIONAL for debugging auth issues (turn off once working)
+// IdentityModelEventSource.ShowPII = true;
+// IdentityModelEventSource.LogCompleteSecurityArtifact = true;
+
+// ---- CORS (React dev server) ----
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("spa", policy =>
     {
         policy
             .WithOrigins("http://localhost:5173")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// ---- OpenAPI + Swagger UI ----
 builder.Services.AddOpenApi();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// ---- Auth0 JWT Bearer ----
+var domain = builder.Configuration["Auth0:Domain"];
+var audience = builder.Configuration["Auth0:Audience"];
+
+if (string.IsNullOrWhiteSpace(domain) || string.IsNullOrWhiteSpace(audience))
+{
+    throw new InvalidOperationException(
+        "Missing Auth0 configuration. Ensure user-secrets contain 'Auth0:Domain' and 'Auth0:Audience'.");
+}
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var domain = builder.Configuration["Auth0:Domain"];
-        var audience = builder.Configuration["Auth0:Audience"];
-
-        if (string.IsNullOrWhiteSpace(domain) || string.IsNullOrWhiteSpace(audience))
-            throw new InvalidOperationException("Missing Auth0:Domain or Auth0:Audience config.");
-
         options.Authority = $"https://{domain}/";
         options.Audience = audience;
+
+        // Helpful while troubleshooting:
+        options.IncludeErrorDetails = true;
     });
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Add CORS middleware
+// ---- Middleware order matters ----
 app.UseCors("spa");
 
-// Add authentication & authorization middlewares
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-// Configure the HTTP request pipeline.
+// ---- OpenAPI endpoints (Development only) ----
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
-    app.UseSwaggerUI(c =>
+    app.UseSwaggerUI(options =>
     {
-        c.SwaggerEndpoint("/openapi/v1.json", "GoTogether API v1");
+        options.SwaggerEndpoint("/openapi/v1.json", "GoTogether API v1");
+        options.RoutePrefix = "swagger";
     });
 }
 
-app.UseHttpsRedirection();
-
-// Use api variable for versioning and holding prefix
+// ---- Routes ----
 var api = app.MapGroup("/api/v1");
 
-api.MapGet("/", () =>
-{
-    return "Home!";
-})
-    .WithName("Hello")
-    .WithSummary("Health check / hello")
-    .WithDescription("Simple endpoint used to confirm the API is reachable.");
+api.MapGet("/", () => Results.Ok(new { message = "Home ✅" }))
+   .AllowAnonymous();
 
 api.MapGet("/secret", () => Results.Ok(new { message = "Authenticated ✅" }))
-   .RequireAuthorization()
-   .WithTags("Auth")
-   .WithSummary("Protected test endpoint");
+   .RequireAuthorization();
 
 app.Run();
