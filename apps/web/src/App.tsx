@@ -1,26 +1,13 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import TestApi from "./components/TestApi";
+import { Routes, Route } from "react-router-dom";
+import { AppLayout } from "./layouts/AppLayouts";
 
 export default function App() {
-  const { isAuthenticated, isLoading, loginWithRedirect, error } = useAuth0();
-
-  if (isLoading) return <div>Loading…</div>;
-  if (error) return <div>Auth error: {error.message}</div>;
-
   return (
-    <div className="p-6">
-      <h1>GoTogether</h1>
-      {!isAuthenticated ? (
-        <button onClick={() => loginWithRedirect({
-  authorizationParams: {
-    prompt: "login"
-  }
-})}>Log in</button>
-      ) : (
-        <div>Logged in ✅
-          <TestApi />
-        </div>
-      )}
-    </div>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route path='/' element={<div>Home</div>} />
+        <Route path='/dashboard' element={<div>Dashboard</div>} />
+      </Route>
+    </Routes>
   );
 }
