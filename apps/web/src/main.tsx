@@ -24,6 +24,8 @@ createRoot(document.getElementById("root")!).render(
         redirect_uri: window.location.origin,
         audience: audience,
       }}
+      useRefreshTokens={true}
+      cacheLocation='localstorage'
     >
       <BrowserRouter>
         <App />

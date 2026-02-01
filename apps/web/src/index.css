@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+/* Optional (recommended): make dark:* work via a .dark class */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Brand tokens. bg-brand, text-brand, etc. */
+  /* Primary brand color for actions, important highlights */
+  --color-brand: oklch(0.62 0.17 255);
+  /* Text or icon color that sits on top of brand color */
+  --color-brand-foreground: oklch(0.98 0.01 255);
+
+  /* App surfaces */
+  /* Main app background */
+  --color-bg: oklch(1 0 0);
+  /* Raised, grouped surfaces that sit on top of the background */
+  --color-surface: oklch(0.98 0.01 250);
+  --color-surface-hover: oklch(0.95 0.01 250);
+
+  /* Text */
+  /* Default readable text color */
+  --color-text: oklch(0.2 0.02 255);
+  --color-text-muted: oklch(0.45 0.02 255);
+
+  /* Borders */
+  /* Neutral separators and outlines */
+  --color-border: oklch(0.9 0.01 255);
+}

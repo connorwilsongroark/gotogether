@@ -1,12 +1,17 @@
 import { Routes, Route } from "react-router-dom";
-import { AppLayout } from "./layouts/AppLayouts";
+import { AppLayout } from "./layouts/AppLayout";
+import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route path='/' element={<div>Home</div>} />
-        <Route path='/dashboard' element={<div>Dashboard</div>} />
+        <Route path='/' element={<Home />} />
+        <Route path='/dashboard' element={<Dashboard />} />
+        {/* Catch-all 404 */}
+        <Route path='*' element={<NotFound />} />
       </Route>
     </Routes>
   );
