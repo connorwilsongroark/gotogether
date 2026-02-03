@@ -1,3 +1,4 @@
+using GoTogether.Features.Places;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 
@@ -67,6 +68,8 @@ if (app.Environment.IsDevelopment())
 // ---- Routes ----
 var api = app.MapGroup("/api/v1");
 
+api.MapGroup("/places").MapPlacesEndpoints();
+
 api.MapGet("/", () => Results.Ok(new { message = "Home ✅" }))
    .AllowAnonymous();
 
@@ -74,3 +77,6 @@ api.MapGet("/secret", () => Results.Ok(new { message = "Authenticated ✅" }))
    .RequireAuthorization();
 
 app.Run();
+
+// Required for WebApplicationFactory<Program>
+public partial class Program { }
