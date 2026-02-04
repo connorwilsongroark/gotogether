@@ -1,12 +1,11 @@
-using GoTogether.Features.Places;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using GoTogether.Data;
+using GoTogether.Features.Places;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// OPTIONAL for debugging auth issues (turn off once working)
-// IdentityModelEventSource.ShowPII = true;
-// IdentityModelEventSource.LogCompleteSecurityArtifact = true;
 
 // ---- CORS (React dev server) ----
 builder.Services.AddCors(options =>
@@ -20,8 +19,53 @@ builder.Services.AddCors(options =>
     });
 });
 
+// ---- Register DbContext
+var cs = builder.Configuration.GetConnectionString("Default");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(cs));
+
 // ---- OpenAPI + Swagger UI ----
-builder.Services.AddOpenApi();
+// Add 'Authorize' button to the Swagger UI for adding bearer token for testing
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, ct) =>
+    {
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??=
+            new Dictionary<string, OpenApiSecurityScheme>();
+
+        document.Components.SecuritySchemes["Bearer"] =
+            new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Name = "Authorization"
+            };
+
+        document.SecurityRequirements ??=
+            new List<OpenApiSecurityRequirement>();
+
+        document.SecurityRequirements.Add(
+            new OpenApiSecurityRequirement
+            {
+                [
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    }
+                ] = Array.Empty<string>()
+            });
+
+        return Task.CompletedTask;
+    });
+});
+
 
 // ---- Auth0 JWT Bearer ----
 var domain = builder.Configuration["Auth0:Domain"];

@@ -1,3 +1,5 @@
+import TestApi from "../components/TestApi";
+
 export default function Home() {
   return (
     <div className='space-y-2'>
@@ -5,6 +7,7 @@ export default function Home() {
       <p className='text-text-muted'>
         Landing page / marketing / intro goes here.
       </p>
+      <TestApi />
     </div>
   );
 }

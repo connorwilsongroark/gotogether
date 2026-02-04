@@ -16,6 +16,7 @@ const TestApi = () => {
       const token = await getAccessTokenSilently({
         authorizationParams: { audience: "https://api.gotogether.dev" },
       });
+      console.log(token);
       // Call protected endpoint with Bearer token
       const res = await fetch("http://localhost:5274/api/v1/secret", {
         headers: {
@@ -44,7 +45,6 @@ const TestApi = () => {
 
   return (
     <div>
-      <h2>Test API</h2>
       <button onClick={callApi}>Call API</button>
       <p>{result}</p>
     </div>

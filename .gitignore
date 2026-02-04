@@ -9,6 +9,11 @@ obj/
 *.user
 *.suo
 
+# ===== DBs =====
+*.db
+*.db-shm
+*.db-wal
+
 # ===== Env files =====
 .env
 .env.*
