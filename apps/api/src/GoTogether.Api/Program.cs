@@ -83,8 +83,7 @@ builder.Services
     {
         options.Authority = $"https://{domain}/";
         options.Audience = audience;
-
-        // Helpful while troubleshooting:
+        
         options.IncludeErrorDetails = true;
     });
 

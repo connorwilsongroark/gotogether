@@ -1,4 +1,5 @@
 import TestApi from "../components/TestApi";
+import { PlaceCreateForm } from "../features/places/components/PlaceCreateForm";
 
 export default function Home() {
   return (
@@ -7,7 +8,7 @@ export default function Home() {
       <p className='text-text-muted'>
         Landing page / marketing / intro goes here.
       </p>
-      <TestApi />
+      <PlaceCreateForm />
     </div>
   );
 }
