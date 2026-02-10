@@ -17,9 +17,9 @@ export function AppLayout() {
   return (
     <>
       <TopBar />
-      <div className='mx-auto flex max-w-5xl'>
+      <div className='mx-auto flex max-w-5xl overflow-x-hidden'>
         {isAuthenticated && <SideNav />}
-        <main className='flex-1 p-6'>
+        <main className='flex-1 min-w-0 p-6'>
           <Outlet />
         </main>
       </div>

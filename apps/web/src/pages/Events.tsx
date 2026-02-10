@@ -11,7 +11,11 @@ export default function Events() {
     <div className='space-y-2'>
       <h1 className='text-xl font-semibold'>Events</h1>
       <p className='text-text-muted'>Your upcoming events</p>
-      <Timeline events={data} />
+      <div className='flex'>
+        <div className='flex-1 min-w-0'>
+          <Timeline events={data} />
+        </div>
+      </div>
     </div>
   );
 }
