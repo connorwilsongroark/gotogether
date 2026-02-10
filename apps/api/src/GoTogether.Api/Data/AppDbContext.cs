@@ -7,6 +7,7 @@ public sealed class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
 
+    public DbSet<AppUser> Users => Set<AppUser>();
     public DbSet<Place> Places => Set<Place>();
     public DbSet<Event> Events => Set<Event>();
     public DbSet<EventAttendee> EventAttendees => Set<EventAttendee>();
@@ -14,6 +15,11 @@ public sealed class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // ---- Users ----
+        modelBuilder.Entity<AppUser>()
+            .HasIndex(u => u.Auth0Sub)
+            .IsUnique();
 
         // ---- Place ----
         modelBuilder.Entity<Place>(entity =>
@@ -75,7 +81,7 @@ public sealed class AppDbContext : DbContext
 
             // Helpful indexes
             entity.HasIndex(a => a.UserId); // "events I'm invited to" queries
-            
+
         });
 
     }
