@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using GoTogether.Data;
 using GoTogether.Features.Places;
+using GoTogether.Features.Profile;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +112,10 @@ if (app.Environment.IsDevelopment())
 var api = app.MapGroup("/api/v1");
 
 api.MapGroup("/places").MapPlacesEndpoints();
+
+api.MapGroup("/me")
+    .RequireAuthorization()
+    .MapMeEndpoints();
 
 api.MapGet("/", () => Results.Ok(new { message = "Home ✅" }))
    .AllowAnonymous();
