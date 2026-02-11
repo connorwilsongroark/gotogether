@@ -34,8 +34,10 @@ async function authedFetch(
   });
 }
 
+const apiBase = import.meta.env.VITE_API_BASE_URL;
+
 export async function getMe(getAccessTokenSilently: any): Promise<Me> {
-  const res = await authedFetch(getAccessTokenSilently, "api/v1/me");
+  const res = await authedFetch(getAccessTokenSilently, `${apiBase}/me`);
   if (!res.ok) throw new Error(`GET /api/v1/me failed: ${res.status}`);
   return res.json();
 }
@@ -44,14 +46,14 @@ export async function patchMe(
   getAccessTokenSilently: any,
   body: UpdateMeRequest,
 ): Promise<Me> {
-  const res = await authedFetch(getAccessTokenSilently, "api/v1/me", {
+  const res = await authedFetch(getAccessTokenSilently, `${apiBase}/me`, {
     method: "PATCH",
     body: JSON.stringify(body),
   });
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`PATCH /api/v1/me failed: ${res.status} ${text}`);
+    throw new Error(`PATCH ${apiBase}/me failed: ${res.status} ${text}`);
   }
   return res.json();
 }
