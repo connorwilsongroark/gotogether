@@ -19,7 +19,11 @@ export default function TopBar() {
         {/* Left side  of navigation*/}
         <div className='flex items-center gap-6'>
           <Link to='/' className='text-lg font-semibold tracking-tight'>
-            GoTogether
+            <img
+              src='public\brand\logos\gotogether-logo.png'
+              alt='GoTogether Logo'
+              className='h-12 w-auto'
+            />
           </Link>
 
           <div className='flex items-center gap-4'>
