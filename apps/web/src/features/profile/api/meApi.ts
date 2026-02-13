@@ -38,7 +38,7 @@ const apiBase = import.meta.env.VITE_API_BASE_URL;
 
 export async function getMe(getAccessTokenSilently: any): Promise<Me> {
   const res = await authedFetch(getAccessTokenSilently, `${apiBase}/me`);
-  if (!res.ok) throw new Error(`GET /api/v1/me failed: ${res.status}`);
+  if (!res.ok) throw new Error(`GET ${apiBase}/me failed: ${res.status}`);
   return res.json();
 }
 

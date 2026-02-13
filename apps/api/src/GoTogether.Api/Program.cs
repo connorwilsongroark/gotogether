@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using GoTogether.Data;
 using GoTogether.Features.Places;
 using GoTogether.Features.Profile;
+using GoTogether.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,13 @@ builder.Services
         options.IncludeErrorDetails = true;
     });
 
+// ---- File Storage ----
+builder.Services.Configure<LocalStorageOptions>(
+    builder.Configuration.GetSection("Storage")
+);
+
+builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -106,6 +114,17 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "GoTogether API v1");
         options.RoutePrefix = "swagger";
     });
+
+    var uploadRoot = builder.Configuration["Storage:UploadRoot"] ?? "uploads";
+    var uploadPath = Path.Combine(app.Environment.ContentRootPath, uploadRoot);
+    // Ensure the folder exists so PhysicalFileProvider doesn't throw an error
+    Directory.CreateDirectory(uploadPath);
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadPath),
+        RequestPath = "/" + uploadRoot
+    });
 }
 
 // ---- Routes ----
@@ -113,15 +132,13 @@ var api = app.MapGroup("/api/v1");
 
 api.MapGroup("/places").MapPlacesEndpoints();
 
-api.MapGroup("/me")
-    .RequireAuthorization()
-    .MapMeEndpoints();
+// Map profile routes
+var me = api.MapGroup("/me")
+    .RequireAuthorization();
 
-api.MapGet("/", () => Results.Ok(new { message = "Home ✅" }))
-   .AllowAnonymous();
+me.MapMeEndpoints();
+me.MapMeAvatarEndpoints();
 
-api.MapGet("/secret", () => Results.Ok(new { message = "Authenticated ✅" }))
-   .RequireAuthorization();
 
 app.Run();
 
