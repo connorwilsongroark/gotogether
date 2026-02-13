@@ -20,7 +20,7 @@ export default function TopBar() {
         <div className='flex items-center gap-6'>
           <Link to='/' className='text-lg font-semibold tracking-tight'>
             <img
-              src='public\brand\logos\gotogether-logo.png'
+              src='\brand\logos\gotogether-logo.png'
               alt='GoTogether Logo'
               className='h-12 w-auto'
             />
